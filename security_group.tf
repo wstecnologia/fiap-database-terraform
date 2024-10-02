@@ -9,7 +9,7 @@ resource "aws_security_group" "sg_webserver" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["45.172.69.188/32"]  # Substitua pelo seu IP
+    cidr_blocks = ["45.172.69.188/32"] # Substitua pelo seu IP
   }
 
   ingress {
@@ -60,7 +60,7 @@ resource "aws_security_group" "sg_rds" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Substitua pelo seu IP
+    cidr_blocks = ["0.0.0.0/0"] # Substitua pelo seu IP
   }
 
   egress {
