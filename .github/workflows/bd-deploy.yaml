@@ -33,9 +33,6 @@ jobs:
       - name: Executar Terraform Plan
         id: plan
         run: terraform plan
-          -var "bd_name=${{ secrets.BD_NAME }}" \
-          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
-          -var "bd_username=${{ secrets.BD_USERNAME }}"
 
       - name: Aplicar Terraform
         run: terraform apply -auto-approve tfplan
