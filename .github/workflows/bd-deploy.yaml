@@ -1,9 +1,9 @@
 name: Deploy Infra com Terraform
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
+      - "**"
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.0.0 # Substitua pela versão desejada
+          terraform_version: 1.9.6
 
       - name: Inicializar Terraform
         run: terraform init
@@ -26,10 +26,20 @@ jobs:
 
       - name: Executar Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
+          -var "bd_name=${{ secrets.BD_NAME }}" \
+          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
+          -var "bd_username=${{ secrets.BD_USERNAME }}"
 
       - name: Aplicar Terraform
         run: terraform apply -auto-approve tfplan
+          -var "bd_name=${{ secrets.BD_NAME }}" \
+          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
+          -var "bd_username=${{ secrets.BD_USERNAME }}"
+
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BD_NAME: ${{ secrets.BD_NAME }}
+          BD_PASSWORD: ${{ secrets.BD_PASSWORD }}
+          BD_USERNAME: ${{ secrets.BD_USERNAME }}
