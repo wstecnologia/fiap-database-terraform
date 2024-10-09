@@ -3,7 +3,7 @@ name: Deploy Infra com Terraform
 on:
   pull_request:
     branches:
-      - "**"
+      - main
 
 jobs:
   deploy:
@@ -15,12 +15,6 @@ jobs:
     steps:
       - name: Checkout do código
         uses: actions/checkout@v2
-
-      - name: Criar arquivo terraform.tfvars
-        run: |
-          echo "bd_name = \"${{ secrets.BD_NAME }}\"" >> terraform.tfvars
-          echo "bd_password = \"${{ secrets.BD_PASSWORD }}\"" >> terraform.tfvars
-          echo "bd_username = \"${{ secrets.BD_USERNAME }}\"" >> terraform.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v1
@@ -35,8 +29,16 @@ jobs:
 
       - name: Executar Terraform Plan
         id: plan
-        run: terraform plan
+        run: |
+          terraform plan \
+          -var "bd_name=${{ secrets.BD_NAME }}" \
+          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
+          -var "bd_username=${{ secrets.BD_USERNAME }}"
 
       - name: Aplicar Terraform
-        run: terraform apply -auto-approve
+        run: |
+          terraform apply -auto-approve \
+          -var "bd_name=${{ secrets.BD_NAME }}" \
+          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
+          -var "bd_username=${{ secrets.BD_USERNAME }}"
 
