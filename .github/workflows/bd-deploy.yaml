@@ -31,14 +31,14 @@ jobs:
         id: plan
         run: |
           terraform plan \
-          -var "bd_name=${{ secrets.BD_NAME }}" \
-          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
-          -var "bd_username=${{ secrets.BD_USERNAME }}"
+          -var "db_name=${{ secrets.DB_DATABASE }}" \
+          -var "db_password=${{ secrets.DB_PASSWORD }}" \
+          -var "db_username=${{ secrets.DB_USER }}"
 
       - name: Aplicar Terraform
         run: |
           terraform apply -auto-approve \
-          -var "bd_name=${{ secrets.BD_NAME }}" \
-          -var "bd_password=${{ secrets.BD_PASSWORD }}" \
-          -var "bd_username=${{ secrets.BD_USERNAME }}"
+          -var "db_name=${{ secrets.DB_DATABASE }}" \
+          -var "db_password=${{ secrets.DB_PASSWORD }}" \
+          -var "db_username=${{ secrets.DB_USER }}"
 
