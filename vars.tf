@@ -2,20 +2,19 @@ variable "regionDefault" {
   default = "us-east-1"
 }
 
-variable "db_username" {
+variable "bd_username" {
   description = "O nome de usuário do banco de dados"
   type        = string
 }
 
-variable "db_password" {
+variable "bd_password" {
   description = "A senha do banco de dados"
   type        = string
 }
 
-variable "db_name" {
+variable "bd_name" {
   description = "O nome do banco de dados"
-  type        = string
-  default     = "lanchonetews"
+  type        = string  
 }
 
 variable "projectName" {
