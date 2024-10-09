@@ -3,11 +3,14 @@ name: Deploy Infra com Terraform
 on:
   pull_request:
     branches:
-      - "**"
+      - "main"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout do código
@@ -36,7 +39,3 @@ jobs:
 
       - name: Aplicar Terraform
         run: terraform apply -auto-approve
-
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
