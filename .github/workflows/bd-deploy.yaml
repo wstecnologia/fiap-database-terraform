@@ -3,7 +3,7 @@ name: Deploy Infra com Terraform
 on:
   pull_request:
     branches:
-      - "**"
+      - main
 
 jobs:
   deploy:
