@@ -28,8 +28,3 @@ variable "labRole" {
 variable "accessConfig" {
   default = "API_AND_CONFIG_MAP"
 }
-
-#variable "key_name" {
-#  description = "Nome do par de chaves SSH"
-#  type        = string
-#}
