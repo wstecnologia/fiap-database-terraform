@@ -11,9 +11,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      BD_NAME: ${{ secrets.BD_NAME }}
-      BD_PASSWORD: ${{ secrets.BD_PASSWORD }}
-      BD_USERNAME: ${{ secrets.BD_USERNAME }}
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v2
@@ -41,4 +39,3 @@ jobs:
           -var "bd_name=${{ secrets.BD_NAME }}" \
           -var "bd_password=${{ secrets.BD_PASSWORD }}" \
           -var "bd_username=${{ secrets.BD_USERNAME }}"
-
