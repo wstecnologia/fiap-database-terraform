@@ -28,8 +28,10 @@ jobs:
           aws-region: ${{env.AWS_REGION}}
 
       - name: Inicializar Terraform
-        run: terraform init
-
+        run: terraform init \
+          -var "db_name=${{ secrets.DB_DATABASE }}" \
+          -var "db_password=${{ secrets.DB_PASSWORD }}" \
+          -var "db_username=${{ secrets.DB_USER }}" \
       - name: Import Existing DB Subnet Group
         run: |
           EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
