@@ -51,6 +51,15 @@ jobs:
             fi
           fi
 
+      - name: Import Existing DB Instance
+        run: |
+          if ! terraform state list | grep -q aws_db_instance.db_instance; then
+            EXISTING_DB_INSTANCE=$(aws rds describe-db-instances --db-instance-identifier wstech-postgres-db --query 'DBInstances[0].DBInstanceIdentifier' --output text)
+            if [ "$EXISTING_DB_INSTANCE" == "wstech-postgres-db" ]; then
+              terraform import aws_db_instance.db_instance wstech-postgres-db
+            fi
+          fi
+
       - name: Validar Terraform
         run: terraform validate
 
