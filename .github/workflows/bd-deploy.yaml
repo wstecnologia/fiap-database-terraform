@@ -28,10 +28,20 @@ jobs:
           aws-region: ${{env.AWS_REGION}}
 
       - name: Inicializar Terraform
-        run: terraform init \
+        run: terraform init
+
+      - name: Validar Terraform
+        run: terraform validate
+
+      - name: Executar Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
           -var "db_name=${{ secrets.DB_DATABASE }}" \
           -var "db_password=${{ secrets.DB_PASSWORD }}" \
           -var "db_username=${{ secrets.DB_USER }}" \
+          -out=tfplan
+
       - name: Import Existing DB Subnet Group
         run: |
           EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
@@ -45,18 +55,6 @@ jobs:
           if [ "$EXISTING_SG" != "None" ]; then
             terraform import aws_security_group.sg-db $EXISTING_SG
           fi
-
-      - name: Validar Terraform
-        run: terraform validate
-
-      - name: Executar Terraform Plan
-        id: plan
-        run: |
-          terraform plan \
-          -var "db_name=${{ secrets.DB_DATABASE }}" \
-          -var "db_password=${{ secrets.DB_PASSWORD }}" \
-          -var "db_username=${{ secrets.DB_USER }}" \
-          -out=tfplan
 
       - name: Aplicar Terraform
         run: |
