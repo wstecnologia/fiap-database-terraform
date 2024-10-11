@@ -57,8 +57,7 @@ jobs:
       - name: Executar Terraform Plan
         id: plan
         run: |
-          terraform plan 
-          -out=tfplan
+          terraform plan -out=tfplan
 
       - name: Aplicar Terraform
         run: |
