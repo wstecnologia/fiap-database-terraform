@@ -8,13 +8,3 @@ data "aws_subnets" "available" {
     values = [data.aws_vpc.vpc.id]
   }
 }
-data "aws_security_group" "existing_sg" {
-  filter {
-    name   = "group-name"
-    values = ["SG=${var.projectName}"]
-  }
-
-  vpc_id = data.aws_vpc.vpc.id
-
- 
-}
