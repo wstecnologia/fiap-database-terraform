@@ -35,25 +35,29 @@ jobs:
 
       - name: Import Existing DB Subnet Group
         run: |
-          EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
-          if [ "$EXISTING_SUBNET_GROUP" == "db-subnet-group" ]; then
-            terraform import aws_db_subnet_group.sg db-subnet-group
+          if ! terraform state list | grep -q aws_db_subnet_group.sg; then
+            EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
+            if [ "$EXISTING_SUBNET_GROUP" == "db-subnet-group" ]; then
+              terraform import aws_db_subnet_group.sg db-subnet-group
+            fi
           fi
 
       - name: Import Existing Security Group
         run: |
-          EXISTING_SG=$(aws ec2 describe-security-groups --filters Name=group-name,Values=db-sg-wstech --query 'SecurityGroups[0].GroupId' --output text)
-          if [ "$EXISTING_SG" != "None" ]; then
-            terraform import aws_security_group.sg-db $EXISTING_SG
+          if ! terraform state list | grep -q aws_security_group.sg-db; then
+            EXISTING_SG=$(aws ec2 describe-security-groups --filters Name=group-name,Values=db-sg-wstech --query 'SecurityGroups[0].GroupId' --output text)
+            if [ "$EXISTING_SG" != "None" ]; then
+              terraform import aws_security_group.sg-db $EXISTING_SG
+            fi
           fi
 
-          - name: Validar Terraform
-          run: terraform validate
+      - name: Validar Terraform
+        run: terraform validate
 
       - name: Executar Terraform Plan
         id: plan
         run: |
-          terraform plan \
+          terraform plan 
           -out=tfplan
 
       - name: Aplicar Terraform
