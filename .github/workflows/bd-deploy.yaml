@@ -10,38 +10,33 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
-
+      TF_VAR_db_name: ${{ secrets.DB_DATABASE }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+      TF_VAR_db_username: ${{ secrets.DB_USER }}
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.6
 
-      - name: Configurar credenciais AWS
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{env.AWS_REGION}}
 
       - name: Inicializar Terraform
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Importar ou criar DB Subnet Group
         run: |
           EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
           if [ "$EXISTING_SUBNET_GROUP" == "db-subnet-group" ]; then
             terraform import aws_db_subnet_group.sg db-subnet-group
-          else
-            aws rds create-db-subnet-group \
-              --db-subnet-group-name db-subnet-group \
-              --db-subnet-group-description "Database Subnet Group" \
-              --subnet-ids subnet-0fe2900272cae3e8f subnet-0d36abbb7cd6464a8 \
-                           subnet-09839e082a103761f subnet-02188c361692e8ea8 \
-                           subnet-05ac98af442288d17 subnet-0f5ba800894b09c69
           fi
 
       - name: Importar ou criar Security Group
@@ -49,12 +44,6 @@ jobs:
           EXISTING_SG=$(aws ec2 describe-security-groups --filters Name=group-name,Values=db-sg-wstech --query 'SecurityGroups[0].GroupId' --output text)
           if [ "$EXISTING_SG" != "None" ]; then
             terraform import aws_security_group.sg-db $EXISTING_SG
-          else
-            NEW_SG=$(aws ec2 create-security-group \
-              --group-name db-sg-wstech \
-              --description "Security group for RDS DB" \
-              --vpc-id vpc-0632166a2978aa9fd)
-            echo "Created Security Group with ID: $NEW_SG"
           fi
 
       - name: Validar Terraform
@@ -63,11 +52,7 @@ jobs:
       - name: Executar Terraform Plan
         id: plan
         run: |
-          terraform plan \
-          -var "db_name=${{ secrets.DB_DATABASE }}" \
-          -var "db_password=${{ secrets.DB_PASSWORD }}" \
-          -var "db_username=${{ secrets.DB_USER }}" \
-          -out=tfplan
+          terraform plan -out=tfplan
 
       - name: Aplicar Terraform
         run: terraform apply -auto-approve tfplan
