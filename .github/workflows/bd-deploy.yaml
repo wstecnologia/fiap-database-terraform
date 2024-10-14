@@ -23,41 +23,27 @@ jobs:
           terraform_version: 1.9.6
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{env.AWS_REGION}}
 
       - name: Inicializar Terraform
         run: terraform init -input=false
 
-      - name: Import Existing DB Subnet Group
+      - name: Importar ou criar DB Subnet Group
         run: |
-          if ! terraform state list | grep -q aws_db_subnet_group.sg; then
-            EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
-            if [ "$EXISTING_SUBNET_GROUP" == "db-subnet-group" ]; then
-              terraform import aws_db_subnet_group.sg db-subnet-group
-            fi
+          EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --db-subnet-group-name db-subnet-group --query 'DBSubnetGroups[0].DBSubnetGroupName' --output text)
+          if [ "$EXISTING_SUBNET_GROUP" == "db-subnet-group" ]; then
+            terraform import aws_db_subnet_group.sg db-subnet-group
           fi
 
-      - name: Import Existing Security Group
+      - name: Importar ou criar Security Group
         run: |
-          if ! terraform state list | grep -q aws_security_group.sg-db; then
-            EXISTING_SG=$(aws ec2 describe-security-groups --filters Name=group-name,Values=db-sg-wstech --query 'SecurityGroups[0].GroupId' --output text)
-            if [ "$EXISTING_SG" != "None" ]; then
-              terraform import aws_security_group.sg-db $EXISTING_SG
-            fi
-          fi
-
-      - name: Import Existing DB Instance
-        run: |
-          if ! terraform state list | grep -q aws_db_instance.db_instance; then
-            EXISTING_DB_INSTANCE=$(aws rds describe-db-instances --db-instance-identifier wstech-postgres-db --query 'DBInstances[0].DBInstanceIdentifier' --output text)
-            if [ "$EXISTING_DB_INSTANCE" == "wstech-postgres-db" ]; then
-              terraform import aws_db_instance.db_instance wstech-postgres-db
-            fi
+          EXISTING_SG=$(aws ec2 describe-security-groups --filters Name=group-name,Values=db-sg-wstech --query 'SecurityGroups[0].GroupId' --output text)
+          if [ "$EXISTING_SG" != "None" ]; then
+            terraform import aws_security_group.sg-db $EXISTING_SG
           fi
 
       - name: Validar Terraform
@@ -69,5 +55,4 @@ jobs:
           terraform plan -out=tfplan
 
       - name: Aplicar Terraform
-        run: |
-          terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan

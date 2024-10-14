@@ -14,7 +14,8 @@ variable "db_password" {
 
 variable "db_name" {
   description = "O nome do banco de dados"
-  type        = string  
+  type        = string
+  default = "lanchonetews"
 }
 
 variable "projectName" {
