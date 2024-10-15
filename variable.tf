@@ -13,7 +13,7 @@ variable "db_password" {
 }
 
 variable "db_name" {
-  description = "O nome do banco de dados"
+  description = "FIAP - O nome do banco de dados "
   type        = string
   default     = "lanchonetews"
 }
