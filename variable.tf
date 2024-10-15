@@ -15,7 +15,7 @@ variable "db_password" {
 variable "db_name" {
   description = "O nome do banco de dados"
   type        = string
-  default = "lanchonetews"
+  default     = "lanchonetews"
 }
 
 variable "projectName" {
@@ -28,4 +28,14 @@ variable "labRole" {
 
 variable "accessConfig" {
   default = "API_AND_CONFIG_MAP"
+}
+
+variable "security_group_id" {
+  type    = string
+  default = "sg-01796ef36943f91d8"
+}
+
+variable "vpc_cidr_block" {
+  type    = string
+  default = "172.31.0.0/16"
 }
