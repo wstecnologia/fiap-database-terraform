@@ -1,7 +1,7 @@
 
 resource "aws_db_subnet_group" "sg" {
   name       = "db-subnet-group"
-  subnet_ids =  local.subnet_ids
+  subnet_ids = local.subnet_ids
 
   tags = {
     Name = "db-subnet-group"
